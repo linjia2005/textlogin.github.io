@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>快捷导航</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "微软雅黑", sans-serif;
+        }
+
+        body {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: url('your-background.jpg') no-repeat center center / cover;
+            color: #fff;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        /* 半透明遮罩层 */
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+            z-index: -1;
+        }
+
+        /* 搜索框样式 */
+        .search-box {
+            position: absolute;
+            top: 100px;
+            width: 90%;
+            max-width: 500px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 25px;
+            padding: 0 15px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-box:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .search-box input {
+            flex: 1;
+            height: 100%;
+            border: none;
+            outline: none;
+            background: transparent;
+            color: #fff;
+            font-size: 16px;
+            padding: 0 10px;
+        }
+
+        .search-box input::placeholder {
+            color: #ddd;
+        }
+
+        .search-box button {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 0 5px;
+            transition: transform 0.2s ease;
+        }
+
+        .search-box button:hover {
+            transform: scale(1.1);
+        }
+
+        /* 搜索引擎选择器样式 */
+        .engine-selector {
+            position: relative;
+            margin-right: 5px;
+        }
+
+        .engine-button {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 0 5px;
+            display: flex;
+            align-items: center;
+        }
+
+        .engine-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            width: 120px;
+            background-color: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            padding: 5px 0;
+            display: none;
+            z-index: 10;
+        }
+
+        .engine-dropdown.active {
+            display: block;
+        }
+
+        .engine-option {
+            padding: 8px 15px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .engine-option:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .engine-option img {
+            width: 16px;
+            height: 16px;
+            margin-right: 8px;
+        }
+
+        /* 时间和日期样式 */
+        .time {
+            font-size: clamp(3rem, 15vw, 6rem);
+            font-weight: bold;
+            margin-bottom: 10px;
+            letter-spacing: -2px;
+            transition: all 0.3s ease;
+        }
+
+        .date-info {
+            font-size: clamp(1rem, 4vw, 1.5rem);
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+
+        /* 座右铭和音乐信息样式 */
+        .motto {
+            font-size: clamp(0.9rem, 3vw, 1.2rem);
+            margin-bottom: 15px;
+            opacity: 0.85;
+            font-style: italic;
+        }
+
+        .music-info {
+            font-size: clamp(0.8rem, 2vw, 1rem);
+            margin-bottom: 60px;
+            opacity: 0.8;
+        }
+
+        /* 图标组样式 */
+        .icon-group {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .icon-group a {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-decoration: none;
+            color: #fff;
+            font-size: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .icon-group a:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .icon-baidu {
+            background-color: #2319DC;
+			
+        }
+
+        .icon-zhihu {
+            background-color: #0E78E7;
+        }
+
+        .icon-taobao {
+            background-color: #FF4400;
+        }
+
+        .icon-jd {
+            background-color: #E4393C;
+        }
+
+        .icon-bilibili {
+            background-color: #FB7299;
+        }
+
+        .icon-github {
+            background-color: #333;
+        }
+
+        .icon-youtube {
+            background-color: #FF0000;
+        }
+
+        /* 底部信息样式 */
+        .footer {
+            position: absolute;
+            bottom: 20px;
+            font-size: 12px;
+            opacity: 0.6;
+            transition: opacity 0.3s ease;
+        }
+
+        .footer:hover {
+            opacity: 0.9;
+        }
+
+        /* 登录按钮样式 */
+        #loginButton {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: none;
+            border-radius: 20px;
+            color: #fff;
+            padding: 8px 16px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        #loginButton:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 登录按钮 -->
+    <button id="loginButton">登录</button>
+
+    <div class="search-box">
+        <div class="engine-selector">
+            <button class="engine-button" id="engineButton">
+                <img src="https://www.baidu.com/favicon.ico" alt="百度" id="currentEngineIcon">
+                <span id="currentEngineText">百度</span>
+                <i>▼</i>
+            </button>
+            <div class="engine-dropdown" id="engineDropdown">
+                <div class="engine-option" data-engine="baidu">
+                    <img src="https://www.baidu.com/favicon.ico" alt="百度">
+                    <span>百度</span>
+                </div>
+                <div class="engine-option" data-engine="google">
+                    <img src="https://www.google.com/favicon.ico" alt="谷歌">
+                    <span>谷歌</span>
+                </div>
+                <div class="engine-option" data-engine="bing">
+                    <img src="https://www.bing.com/favicon.ico" alt="必应">
+                    <span>必应</span>
+                </div>
+                <div class="engine-option" data-engine="zhihu">
+                    <img src="https://www.zhihu.com/favicon.ico" alt="知乎">
+                    <span>知乎</span>
+                </div>
+                <div class="engine-option" data-engine="bilibili">
+                    <img src="https://www.bilibili.com/favicon.ico" alt="哔哩哔哩">
+                    <span>哔哩哔哩</span>
+                </div>
+            </div>
+        </div>
+        <input type="text" id="searchInput" placeholder="搜索...">
+        <button id="searchButton">🚀</button>
+    </div>
+
+    <div class="time" id="time">00:00:00</div>
+    <div class="date-info" id="dateInfo">加载中...</div>
+    <div class="motto">🚩  🚩</div>
+    <div class="music-info">《阳光彩虹小白马》—— 大张伟</div>
+
+    <div class="icon-group">
+        <a href="https://baidu.com" target="_blank" class="icon-baidu">百</a>
+        <a href="https://zhihu.com" target="_blank" class="icon-zhihu">知</a>
+        <a href="https://taobao.com" target="_blank" class="icon-taobao">淘</a>
+        <a href="https://jd.com" target="_blank" class="icon-jd">JD</a>
+        <a href="https://bilibili.com" target="_blank" class="icon-bilibili">B</a>
+        <a href="https://github.com" target="_blank" class="icon-github">Git</a>
+        <a href="https://youtube.com" target="_blank" class="icon-youtube">YTB</a>
+    </div>
+
+    <div class="footer">快捷导航 · 让上网更高效</div>
+
+    <script>
+        // 搜索引擎配置
+        const searchEngines = {
+            'baidu': {
+                name: '百度',
+                url: 'https://www.baidu.com/s?wd={query}',
+                icon: 'https://www.baidu.com/favicon.ico'
+            },
+            'google': {
+                name: '谷歌',
+                url: 'https://www.google.com/search?q={query}',
+                icon: 'https://www.google.com/favicon.ico'
+            },
+            'bing': {
+                name: '必应',
+                url: 'https://cn.bing.com/search?q={query}',
+                icon: 'https://www.bing.com/favicon.ico'
+            },
+            'zhihu': {
+                name: '知乎',
+                url: 'https://www.zhihu.com/search?type=content&q={query}',
+                icon: 'https://www.zhihu.com/favicon.ico'
+            },
+            'bilibili': {
+                name: '哔哩哔哩',
+                url: 'https://search.bilibili.com/all?keyword={query}',
+                icon: 'https://www.bilibili.com/favicon.ico'
+            }
+        };
+
+        let currentEngine = 'baidu';
+
+        // 更新时间函数
+        function updateTime() {
+            const now = new Date();
+
+            // 更新时间
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const seconds = now.getSeconds().toString().padStart(2, '0');
+            document.getElementById('time').textContent = `${hours}:${minutes}:${seconds}`;
+
+            // 更新日期
+            const year = now.getFullYear();
+            const month = now.getMonth() + 1;
+            const date = now.getDate();
+            const day = ['日', '一', '二', '三', '四', '五', '六'][now.getDay()];
+
+            // 获取农历日期（简化版，实际应用中可能需要更复杂的算法）
+            const lunarDate = "六月十六"; // 这里使用固定值，实际应用中可以调用API获取
+
+            document.getElementById('dateInfo').textContent =
+                `${year}年${month}月${date}日 ${lunarDate} 星期${day}`;
+        }
+
+        // 初始调用
+        updateTime();
+        // 每秒更新时间
+        setInterval(updateTime, 1000);
+
+        // 搜索引擎选择器
+        const engineButton = document.getElementById('engineButton');
+        const engineDropdown = document.getElementById('engineDropdown');
+        const currentEngineIcon = document.getElementById('currentEngineIcon');
+        const currentEngineText = document.getElementById('currentEngineText');
+
+        // 切换下拉菜单显示/隐藏
+        engineButton.addEventListener('click', function (e) {
+            e.stopPropagation();
+            engineDropdown.classList.toggle('active');
+        });
+
+        // 点击页面其他地方关闭下拉菜单
+        document.addEventListener('click', function () {
+            engineDropdown.classList.remove('active');
+        });
+
+        // 选择搜索引擎
+        const engineOptions = document.querySelectorAll('.engine-option');
+        engineOptions.forEach(option => {
+            option.addEventListener('click', function () {
+                const engine = this.getAttribute('data-engine');
+                if (engine && searchEngines[engine]) {
+                    currentEngine = engine;
+                    currentEngineIcon.src = searchEngines[engine].icon;
+                    currentEngineText.textContent = searchEngines[engine].name;
+                    engineDropdown.classList.remove('active');
+                }
+            });
+        });
+
+        // 搜索功能
+        document.getElementById('searchButton').addEventListener('click', function () {
+            const searchValue = document.getElementById('searchInput').value.trim();
+            if (searchValue) {
+                const searchUrl = searchEngines[currentEngine].url.replace('{query}', encodeURIComponent(searchValue));
+                window.open(searchUrl, '_blank');
+            }
+        });
+
+        // 支持按Enter键搜索
+        document.getElementById('searchInput').addEventListener('keyup', function (e) {
+            if (e.key === 'Enter') {
+                document.getElementById('searchButton').click();
+            }
+        });
+
+        // 页面加载完成后添加动画效果
+        window.addEventListener('load', function () {
+            // 时间和日期的淡入效果
+            const timeElement = document.getElementById('time');
+            const dateElement = document.getElementById('dateInfo');
+
+            timeElement.style.opacity = '0';
+            timeElement.style.transform = 'translateY(20px)';
+
+            dateElement.style.opacity = '0';
+            dateElement.style.transform = 'translateY(20px)';
+
+            setTimeout(() => {
+                timeElement.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+                timeElement.style.opacity = '1';
+                timeElement.style.transform = 'translateY(0)';
+
+                setTimeout(() => {
+                    dateElement.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+                    dateElement.style.opacity = '1';
+                    dateElement.style.transform = 'translateY(0)';
+                }, 200);
+            }, 100);
+        });
+
+        // 登录按钮点击事件 - 跳转到PHP登录页面
+        document.getElementById('loginButton').addEventListener('click', function() {
+            window.location.href = 'login.php';
+        });
+    </script>
+</body>
+
+</html>
